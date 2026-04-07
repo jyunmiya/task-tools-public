@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEBサイト品質管理ツール Mockup</title>
+  <link rel="stylesheet" href="./mockup.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Website Quality Control</p>
+        <h1>WEBサイト品質管理ツール</h1>
+        <p class="header-copy">案件ごとに品質確認を進める軽量版の管理画面です。案件画面では進捗更新、マスタ管理では標準タスクの調整を行います。</p>
+      </div>
+      <div class="header-actions">
+        <div class="view-switch" id="viewSwitch">
+          <button type="button" class="switch-button is-active" data-view="project">案件画面</button>
+          <button type="button" class="switch-button" data-view="master">マスタ管理</button>
+        </div>
+        <a class="link-btn" href="#" aria-label="スプレッドシートを開く">スプレッドシートを開く</a>
+      </div>
+    </header>
+
+    <section class="screen screen--active" id="projectScreen">
+      <div class="toolbar">
+        <label class="field">
+          <span class="field-label">案件</span>
+          <select id="projectSelect"></select>
+        </label>
+        <button type="button" class="button button--primary">新規案件作成</button>
+      </div>
+
+      <section class="summary-row" id="summaryRow"></section>
+
+      <main class="content-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 id="phaseTitle">制作前</h2>
+              <p id="phaseDescription">調査と要件整理を行い、制作に入る前の抜け漏れを確認します。</p>
+            </div>
+            <div class="phase-tabs" id="phaseTabs"></div>
+          </div>
+
+          <div class="panel-subheader">
+            <div class="sub-copy">
+              <span id="phaseMeta">7タスク</span>
+              <span id="phaseProgress">進捗 57%</span>
+            </div>
+            <div class="status-legend">
+              <span><i class="dot dot--ok"></i>OK</span>
+              <span><i class="dot dot--ng"></i>NG</span>
+              <span><i class="dot dot--pending"></i>未確認</span>
+              <span><i class="dot dot--na"></i>N/A</span>
+            </div>
+          </div>
+
+          <div id="categoryList" class="category-list"></div>
+
+          <div class="panel-footer">
+            <button type="button" class="button button--primary">保存</button>
+          </div>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel panel--compact">
+            <div class="panel-header panel-header--compact">
+              <h3>案件情報</h3>
+            </div>
+            <dl class="info-list">
+              <div><dt>案件ID</dt><dd id="projectId">PJT-2026-001</dd></div>
+              <div><dt>案件名</dt><dd id="projectName">コーポレートサイト刷新</dd></div>
+              <div><dt>担当者</dt><dd id="projectOwner">Web担当</dd></div>
+              <div><dt>現在フェーズ</dt><dd id="projectCurrentPhase">制作前</dd></div>
+              <div><dt>開始日</dt><dd>2026-04-01</dd></div>
+              <div><dt>公開予定日</dt><dd>2026-04-25</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel panel--compact">
+            <div class="panel-header panel-header--compact">
+              <h3>運用ルール</h3>
+            </div>
+            <ul class="plain-list">
+              <li>案件画面ではステータスと備考だけを更新します。</li>
+              <li>標準タスクの追加や編集はマスタ管理画面で行います。</li>
+              <li>完了扱いは `OK` と `N/A` です。</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </section>
+
+    <section class="screen" id="masterScreen">
+      <main class="content-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>チェック項目マスタ管理</h2>
+              <p>標準タスクの追加・編集・有効/無効を行います。案件画面ではここで登録した内容が使われます。</p>
+            </div>
+            <div class="master-actions">
+              <button type="button" class="button button--primary">新規タスク追加</button>
+            </div>
+          </div>
+
+          <div class="panel-subheader">
+            <div class="sub-copy">
+              <span>標準タスク 25件</span>
+              <span>品質確認重視 / コーポレートサイト向け</span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="task-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>フェーズ</th>
+                  <th>カテゴリ</th>
+                  <th>タスク名</th>
+                  <th>重要度</th>
+                  <th>状態</th>
+                </tr>
+              </thead>
+              <tbody id="masterTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel panel--compact">
+            <div class="panel-header panel-header--compact">
+              <h3>現在の方針</h3>
+            </div>
+            <ul class="plain-list">
+              <li>対象はコーポレートサイト制作です。</li>
+              <li>進行管理より品質確認を優先しています。</li>
+              <li>タスク数は多すぎず少なすぎない25件構成です。</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    const masters = [
+      { id: "TM-001", phase: "制作前", category: "現状分析", taskName: "現行サイトの主要流入経路を把握している", priority: "高", active: true },
+      { id: "TM-002", phase: "制作前", category: "現状分析", taskName: "現行サイトの主要ページと導線を把握している", priority: "高", active: true },
+      { id: "TM-003", phase: "制作前", category: "現状分析", taskName: "競合3社の導線と訴求軸を比較した", priority: "中", active: true },
+      { id: "TM-004", phase: "制作前", category: "要件整理", taskName: "サイトの目的と主要KPIを整理した", priority: "高", active: true },
+      { id: "TM-005", phase: "制作前", category: "要件整理", taskName: "ターゲット・訴求内容・優先導線を整理した", priority: "高", active: true },
+      { id: "TM-006", phase: "制作前", category: "素材・体制", taskName: "必要素材の有無と不足分を確認した", priority: "中", active: true },
+      { id: "TM-007", phase: "制作前", category: "素材・体制", taskName: "公開までの確認体制と担当者を整理した", priority: "高", active: true },
+      { id: "TM-008", phase: "制作", category: "情報設計", taskName: "サイトマップまたはページ構成を確認した", priority: "中", active: true },
+      { id: "TM-009", phase: "制作", category: "情報設計", taskName: "各ページの役割と導線設計を確認した", priority: "高", active: true },
+      { id: "TM-010", phase: "制作", category: "デザイン・実装", taskName: "ファーストビューで訴求内容が伝わる", priority: "高", active: true },
+      { id: "TM-011", phase: "制作", category: "デザイン・実装", taskName: "主要導線のCTAが分かりやすく配置されている", priority: "高", active: true },
+      { id: "TM-012", phase: "制作", category: "デザイン・実装", taskName: "PCとスマホで崩れず閲覧できる", priority: "高", active: true },
+      { id: "TM-013", phase: "制作", category: "コンテンツ", taskName: "見出し構造と本文内容が整理されている", priority: "中", active: true },
+      { id: "TM-014", phase: "制作", category: "コンテンツ", taskName: "画像・リンク・埋め込み要素が正しく配置されている", priority: "中", active: true },
+      { id: "TM-015", phase: "公開前", category: "表示確認", taskName: "主要ブラウザで表示崩れがない", priority: "高", active: true },
+      { id: "TM-016", phase: "公開前", category: "表示確認", taskName: "フォーム・電話・外部リンクが正常に動作する", priority: "高", active: true },
+      { id: "TM-017", phase: "公開前", category: "表示確認", taskName: "主要導線が想定どおり遷移する", priority: "高", active: true },
+      { id: "TM-018", phase: "公開前", category: "SEO・計測", taskName: "title / description / OGP の基本設定を確認した", priority: "高", active: true },
+      { id: "TM-019", phase: "公開前", category: "SEO・計測", taskName: "GA4 / Search Console など必要な計測設定を確認した", priority: "高", active: true },
+      { id: "TM-020", phase: "公開前", category: "公開設定", taskName: "noindex / ベーシック認証 / テストコードの解除を確認した", priority: "高", active: true },
+      { id: "TM-021", phase: "公開前", category: "公開設定", taskName: "favicon / 404 / SSL / リダイレクトなど公開設定を確認した", priority: "高", active: true },
+      { id: "TM-022", phase: "公開後", category: "初期確認", taskName: "公開直後に主要ページの表示と導線を確認した", priority: "高", active: true },
+      { id: "TM-023", phase: "公開後", category: "初期確認", taskName: "フォーム送信や主要CVが本番環境で動作した", priority: "高", active: true },
+      { id: "TM-024", phase: "公開後", category: "引き継ぎ", taskName: "更新方法・注意点・運用連絡先を整理した", priority: "中", active: true },
+      { id: "TM-025", phase: "公開後", category: "引き継ぎ", taskName: "計測開始と初期監視の確認を完了した", priority: "中", active: true }
+    ];
+
+    const projects = [
+      {
+        id: "PJT-2026-001",
+        name: "コーポレートサイト刷新",
+        owner: "Web担当",
+        phase: "制作前",
+        descriptions: {
+          "制作前": "調査と要件整理を行い、制作に入る前の抜け漏れを確認します。",
+          "制作": "構成、導線、見た目、コンテンツの品質を確認します。",
+          "公開前": "表示確認、SEO、計測、公開設定の最終確認を行います。",
+          "公開後": "公開直後の不具合確認と引き継ぎを行います。"
+        },
+        taskStatuses: {
+          "TM-001": { status: "ok", note: "GA4とSearch Consoleの現状を確認済み" },
+          "TM-002": { status: "ok", note: "主要ページと流入導線を整理済み" },
+          "TM-003": { status: "ng", note: "競合比較は2社まで。もう1社追加予定" },
+          "TM-004": { status: "ok", note: "目的とKPIを確認済み" },
+          "TM-005": { status: "pending", note: "優先導線の最終確認待ち" },
+          "TM-006": { status: "na", note: "素材は既存流用が中心" },
+          "TM-007": { status: "ok", note: "確認担当と承認者を整理済み" }
+        }
+      }
+    ];
+
+    const state = {
+      view: "project",
+      projectIndex: 0,
+      currentPhase: "制作前"
+    };
+
+    const statusLabels = {
+      ok: "OK",
+      ng: "NG",
+      pending: "未確認",
+      na: "N/A"
+    };
+
+    function getCurrentProject() {
+      return projects[state.projectIndex];
+    }
+
+    function getPhaseItems(phase) {
+      const project = getCurrentProject();
+      return masters
+        .filter((item) => item.phase === phase)
+        .map((item) => {
+          const status = project.taskStatuses[item.id] || { status: "pending", note: "" };
+          return { ...item, ...status };
+        });
+    }
+
+    function renderProjectOptions() {
+      const select = document.getElementById("projectSelect");
+      select.innerHTML = projects
+        .map((project, index) => `<option value="${index}">${project.name}</option>`)
+        .join("");
+      select.value = String(state.projectIndex);
+    }
+
+    function renderSummary() {
+      const row = document.getElementById("summaryRow");
+      const project = getCurrentProject();
+      row.innerHTML = ["制作前", "制作", "公開前", "公開後"].map((phase) => {
+        const rows = getPhaseItems(phase);
+        const done = rows.filter((item) => item.status === "ok" || item.status === "na").length;
+        const percent = rows.length ? Math.round((done / rows.length) * 100) : 0;
+        const activeClass = phase === state.currentPhase ? " is-active" : "";
+        return `
+          <button type="button" class="summary-card${activeClass}" data-phase="${phase}">
+            <div class="summary-card__top">
+              <span>${phase}</span>
+              <strong>${percent}%</strong>
+            </div>
+            <div class="summary-card__bar"><div class="summary-card__fill" style="width:${percent}%"></div></div>
+            <p>${done} / ${rows.length} 完了</p>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderPhaseTabs() {
+      const tabs = document.getElementById("phaseTabs");
+      tabs.innerHTML = ["制作前", "制作", "公開前", "公開後"].map((phase) => {
+        const activeClass = phase === state.currentPhase ? " is-active" : "";
+        return `<button type="button" class="phase-tab${activeClass}" data-phase="${phase}">${phase}</button>`;
+      }).join("");
+    }
+
+    function renderChecklist() {
+      const project = getCurrentProject();
+      const rows = getPhaseItems(state.currentPhase);
+      const grouped = rows.reduce((acc, item) => {
+        if (!acc[item.category]) acc[item.category] = [];
+        acc[item.category].push(item);
+        return acc;
+      }, {});
+
+      document.getElementById("phaseTitle").textContent = state.currentPhase;
+      document.getElementById("phaseDescription").textContent = project.descriptions[state.currentPhase];
+      document.getElementById("phaseMeta").textContent = `${rows.length}タスク`;
+      document.getElementById("phaseProgress").textContent = `進捗 ${Math.round((rows.filter((item) => item.status === "ok" || item.status === "na").length / rows.length) * 100 || 0)}%`;
+      document.getElementById("projectId").textContent = project.id;
+      document.getElementById("projectName").textContent = project.name;
+      document.getElementById("projectOwner").textContent = project.owner;
+      document.getElementById("projectCurrentPhase").textContent = project.phase;
+
+      const list = document.getElementById("categoryList");
+      list.innerHTML = Object.entries(grouped).map(([category, items]) => `
+        <section class="category-card">
+          <div class="category-card__header">
+            <h3>${category}</h3>
+            <span>${items.length}件</span>
+          </div>
+          <table class="task-table">
+            <thead>
+              <tr>
+                <th>タスク名</th>
+                <th>重要度</th>
+                <th>ステータス</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map((item) => `
+                <tr>
+                  <td>${item.taskName}</td>
+                  <td><span class="badge badge--priority">${item.priority}</span></td>
+                  <td><span class="badge badge--${item.status}">${statusLabels[item.status]}</span></td>
+                  <td>${item.note || "未入力"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </section>
+      `).join("");
+    }
+
+    function renderMasterTable() {
+      document.getElementById("masterTableBody").innerHTML = masters.map((item) => `
+        <tr>
+          <td>${item.id}</td>
+          <td>${item.phase}</td>
+          <td>${item.category}</td>
+          <td>${item.taskName}</td>
+          <td><span class="badge badge--priority">${item.priority}</span></td>
+          <td><span class="badge ${item.active ? "badge--ok" : "badge--na"}">${item.active ? "有効" : "無効"}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function render() {
+      renderProjectOptions();
+      renderSummary();
+      renderPhaseTabs();
+      renderChecklist();
+      renderMasterTable();
+    }
+
+    document.getElementById("viewSwitch").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-view]");
+      if (!button) return;
+      state.view = button.dataset.view;
+      document.querySelectorAll(".switch-button").forEach((item) => item.classList.toggle("is-active", item === button));
+      document.getElementById("projectScreen").classList.toggle("screen--active", state.view === "project");
+      document.getElementById("masterScreen").classList.toggle("screen--active", state.view === "master");
+    });
+
+    document.getElementById("projectSelect").addEventListener("change", (event) => {
+      state.projectIndex = Number(event.target.value) || 0;
+      render();
+    });
+
+    document.addEventListener("click", (event) => {
+      const phaseButton = event.target.closest("[data-phase]");
+      if (!phaseButton) return;
+      state.currentPhase = phaseButton.dataset.phase;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
