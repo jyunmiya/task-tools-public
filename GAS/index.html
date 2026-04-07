@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEBサイト品質管理ツール</title>
+  <style>
+    :root{--bg:#f3f4f6;--panel:#fff;--muted:#f8f8f8;--border:#d9d9d9;--text:#202124;--soft:#5f6368;--faint:#8a8d91;--black:#1f1f1f;--g700:#4f5257;--g500:#888c91;--g200:#eceef1;--shadow:0 6px 18px rgba(15,23,42,.06);--r1:16px;--r2:12px;--r3:8px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI","Yu Gothic UI","Hiragino Sans",sans-serif}button,select,input,textarea{font:inherit;color:inherit}
+    .app{max-width:1480px;margin:0 auto;padding:24px}.header,.sub,.grid,.master-grid,.summary{display:grid;gap:12px}.header{grid-template-columns:minmax(0,1fr) auto;align-items:start;margin-bottom:20px}.controls{display:flex;gap:12px;align-items:stretch}.panel,.field,.switch{background:var(--panel);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--shadow)}
+    .panel{border-radius:var(--r1)}.switch{display:flex;gap:8px;padding:8px}.switch button,.pill,.filter{min-width:88px;padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer}.switch button.active,.pill.active,.filter.active{background:var(--black);border-color:var(--black);color:#fff}
+    .title h1{margin:0 0 8px;font-size:1.9rem}.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.desc{margin:0;color:var(--soft)}
+    .field{display:flex;flex-direction:column;gap:6px;padding:12px 14px;min-width:220px}.field label,.helper{font-size:.78rem;color:var(--faint)}.field.hidden{display:none}.field input,.field select,.field textarea{border:1px solid var(--border);border-radius:var(--r3);background:#fff;outline:none;padding:8px 10px}.field .bare{border:0;background:transparent;padding:0;font-weight:600}
+    .summary{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px}.card{padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r2);text-align:left;cursor:pointer;box-shadow:var(--shadow)}.card.active{background:#fafafa}.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.card-top strong{font-size:.82rem;color:var(--soft);font-weight:600}.bar{height:8px;background:var(--g200);border-radius:999px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--black),var(--g700))}.card p{margin:10px 0 0;font-size:.84rem;color:var(--soft)}.card-statuses{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:.78rem;color:var(--soft)}.card-statuses span{white-space:nowrap}
+    .grid,.master-grid{grid-template-columns:minmax(0,1fr) 320px}.main,.side{display:grid;gap:16px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px 0}.panel-head h2,.panel-head h3{margin:0}.panel-head p{margin:6px 0 0;color:var(--soft)}.sub{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:0 20px 16px;border-bottom:1px solid var(--border)}.row{display:flex;gap:12px;flex-wrap:wrap;color:var(--soft);font-size:.84rem}.legend{display:inline-flex;gap:6px;align-items:center}.dot{width:10px;height:10px;border-radius:50%;background:var(--g500)}.dot.ok{background:var(--black)}.dot.ng{background:var(--g700)}.dot.na{background:#d8dadd}
+    .wrap{padding:16px 20px 20px}.section{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:14px}.section-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:var(--muted)}.section-head h3{margin:0 0 4px;font-size:1rem}.section-head p{margin:0;font-size:.82rem;color:var(--soft)}.section-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--soft)}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:14px 16px;border-top:1px solid var(--border);vertical-align:top;text-align:left}.table th{background:#fcfcfc;color:var(--soft);font-size:.8rem;white-space:nowrap}.table th:nth-child(1),.table td:nth-child(1){width:92px;white-space:nowrap}.table th:nth-child(2),.table td:nth-child(2){width:96px;white-space:nowrap}.table th:last-child,.table td:last-child{white-space:nowrap}.badge,.state{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:5px 10px;border-radius:999px;font-size:.78rem;font-weight:700}.badge{border:1px solid var(--border);background:#fff}.state.ok,.state.active{background:var(--black);color:#fff}.state.ng{background:var(--g700);color:#fff}.state.pending,.state.inactive{background:var(--g200)}.state.na{background:#f1f1f1;border:1px solid var(--border);color:var(--soft)}.note-view{max-width:280px;line-height:1.5;white-space:pre-wrap}.row-actions.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .info{margin:12px 0 0;display:grid;gap:12px}.info div{display:grid;gap:4px}.info dt{font-size:.78rem;color:var(--faint)}.info dd{margin:0;font-weight:600}.list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px}.list li{padding-top:12px;border-top:1px solid var(--border)}.list li:first-child{padding-top:0;border-top:0}.list strong{display:block;margin-bottom:4px;font-size:.92rem}.list span,.list p{color:var(--soft);font-size:.84rem}.updates li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px}.updates p,.impact p{margin:0}.actions{margin-top:12px;display:grid;gap:10px}.btn{min-height:40px;border:1px solid var(--border);border-radius:var(--r3);background:#fff;cursor:pointer;font-weight:600;padding:0 14px}.btn.primary{background:var(--black);border-color:var(--black);color:#fff}.btn.small{min-height:32px;font-size:.82rem}.btn[disabled]{opacity:.65;cursor:wait}.link-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:var(--r3);background:#fff;color:var(--text);text-decoration:none;font-weight:600;box-shadow:var(--shadow)}.link-btn:hover{background:#fafafa}
+    .screen{display:none}.screen.active{display:block}.master-tools,.row-actions{display:flex;gap:8px;flex-wrap:wrap}.toast{position:fixed;right:16px;bottom:16px;background:var(--black);color:#fff;padding:10px 14px;border-radius:999px;box-shadow:var(--shadow);display:none}.toast.show{display:inline-flex}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px}.modal-bg.show{display:flex}.modal{width:min(520px,100%);background:#fff;border-radius:var(--r1);box-shadow:var(--shadow);border:1px solid var(--border)}.modal-head,.modal-body,.modal-foot{padding:20px}.modal-head{border-bottom:1px solid var(--border)}.modal-body{display:grid;gap:12px}.modal-foot{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border)}.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    @media(max-width:1100px){.summary,.grid,.master-grid{grid-template-columns:1fr}}@media(max-width:800px){.app{padding:16px}.header,.controls,.sub,.cols2{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.table,.table thead,.table tbody,.table tr,.table th,.table td{display:block}.table thead{display:none}.table td{border-top:0;padding-top:6px;padding-bottom:6px}.table tr{padding:12px 0;border-top:1px solid var(--border)}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="title">
+        <p class="eyebrow">Quality Control Dashboard</p>
+        <h1>WEBサイト品質管理ツール</h1>
+        <p class="desc">標準タスクはマスタで管理し、案件画面では進捗のみを更新します。</p>
+      </div>
+      <div class="controls">
+        <div class="switch" id="viewSwitch">
+          <button class="active" data-view="project" type="button">案件画面</button>
+          <button data-view="master" type="button">マスタ管理</button>
+        </div>
+        <div class="field" id="projectField">
+          <label>案件</label>
+          <select id="projectSelect" class="bare"></select>
+        </div>
+      </div>
+    </header>
+
+    <section class="screen active" id="projectScreen">
+      <section class="summary" id="phaseSummary"></section>
+      <main class="grid">
+        <section class="main">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 id="phaseTitle">制作前</h2>
+                <p id="phaseDescription"></p>
+              </div>
+              <div class="master-tools" id="phaseTabs"></div>
+            </div>
+            <div class="sub">
+              <div class="row">
+                <span id="phaseMetaCount">0タスク</span>
+                <span id="phaseMetaUpdated">最終更新 -</span>
+              </div>
+              <div class="row">
+                <span class="legend"><i class="dot ok"></i>OK</span>
+                <span class="legend"><i class="dot ng"></i>NG</span>
+                <span class="legend"><i class="dot"></i>未確認</span>
+                <span class="legend"><i class="dot na"></i>N/A</span>
+              </div>
+            </div>
+            <div class="wrap">
+              <div class="field" style="margin-bottom:16px">
+                <label>更新者</label>
+                <input id="updatedByInput" type="text" value="Web担当">
+              </div>
+              <div id="checklistGroups"></div>
+            </div>
+          </section>
+        </section>
+        <aside class="side">
+          <section class="panel" style="padding:18px">
+            <div class="panel-head" style="padding:0"><h3>案件情報</h3></div>
+            <dl class="info">
+              <div><dt>案件ID</dt><dd id="projectId">-</dd></div>
+              <div><dt>案件名</dt><dd id="projectName">-</dd></div>
+              <div><dt>担当者</dt><dd id="projectOwner">-</dd></div>
+              <div><dt>現在フェーズ</dt><dd id="projectStage">-</dd></div>
+              <div><dt>期間</dt><dd id="projectWindow">-</dd></div>
+              <div><dt>全体進捗</dt><dd id="projectOverallProgress">0%</dd></div>
+            </dl>
+          </section>
+          <section class="panel" style="padding:18px">
+            <div class="panel-head" style="padding:0"><h3>操作</h3></div>
+            <div class="actions">
+              <button class="btn primary" id="createProjectButton" type="button">新規案件作成</button>
+            </div>
+            <p class="helper" id="spreadsheetLinkWrap" style="margin-top:12px"></p>
+          </section>
+        </aside>
+      </main>
+    </section>
+
+    <section class="screen" id="masterScreen">
+      <div class="master-grid">
+        <section class="main">
+          <section class="panel">
+            <div class="panel-head">
+              <div><h2>チェック項目マスタ管理</h2><p>標準タスクの追加・編集・有効/無効を行います。案件画面では定義を変更しません。</p></div>
+              <div class="master-tools"><button class="btn primary" id="createMasterButton" type="button">新規タスク追加</button></div>
+            </div>
+            <div class="sub">
+              <div class="row"><span id="masterTaskCount">0件の標準タスク</span><span id="masterActiveCount">有効 0件</span></div>
+              <div class="master-tools" id="masterFilter">
+                <button class="filter active" data-filter="all" type="button">すべて</button>
+                <button class="filter" data-filter="active" type="button">有効のみ</button>
+                <button class="filter" data-filter="inactive" type="button">無効のみ</button>
+              </div>
+            </div>
+            <div class="wrap">
+              <table class="table">
+                <thead><tr><th>ID</th><th>フェーズ</th><th>カテゴリ</th><th>タスク名</th><th>重要度</th><th>状態</th><th>並び順</th><th>操作</th></tr></thead>
+                <tbody id="masterTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <aside class="side">
+          <section class="panel" style="padding:18px"><div class="panel-head" style="padding:0"><h3>管理ルール</h3></div><ul class="list"><li>標準タスクの追加・編集・有効/無効はマスタ管理画面で実施</li><li>案件画面ではステータスと備考のみ更新</li><li>既存案件への反映は自動ではなく明示操作で実施</li></ul></section>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-bg" id="projectModal"><div class="modal"><div class="modal-head"><h3>新規案件作成</h3></div><div class="modal-body"><div class="field"><label>案件名</label><input id="modalProjectName" type="text"></div><div class="cols2"><div class="field"><label>担当者</label><input id="modalProjectOwner" type="text" value="Web担当"></div><div class="field"><label>現在フェーズ</label><select id="modalProjectPhase"></select></div></div><div class="cols2"><div class="field"><label>開始日</label><input id="modalProjectStart" type="date"></div><div class="field"><label>公開予定日</label><input id="modalProjectLaunch" type="date"></div></div></div><div class="modal-foot"><button class="btn" data-close="projectModal" type="button">キャンセル</button><button class="btn primary" id="submitProjectButton" type="button">作成</button></div></div></div>
+  <div class="modal-bg" id="masterModal"><div class="modal"><div class="modal-head"><h3 id="masterModalTitle">マスタタスク編集</h3></div><div class="modal-body"><input id="modalTaskMasterId" type="hidden"><div class="cols2"><div class="field"><label>フェーズ</label><select id="modalMasterPhase"></select></div><div class="field"><label>カテゴリ</label><input id="modalMasterCategory" type="text"></div></div><div class="field"><label>タスク名</label><textarea id="modalMasterTaskName"></textarea></div><div class="cols2"><div class="field"><label>重要度</label><select id="modalMasterPriority"></select></div><div class="field"><label>並び順</label><input id="modalMasterSortOrder" type="number" step="10"></div></div></div><div class="modal-foot"><button class="btn" data-close="masterModal" type="button">キャンセル</button><button class="btn primary" id="submitMasterButton" type="button">保存</button></div></div></div>
+
+  <script>
+    const PHASES=['制作前','制作','公開前','公開後'];
+    const PRIORITIES=['高','中','低'];
+    const STATUS_OPTIONS=[{value:'ok',label:'OK'},{value:'ng',label:'NG'},{value:'pending',label:'未確認'},{value:'na',label:'N/A'}];
+    const state={currentView:'project',currentProjectId:'',currentPhase:PHASES[0],masterFilter:'all',appState:null,projectDetail:null,masters:[]};
+    const $=(id)=>document.getElementById(id);
+
+    function init(){fillOptions();bindEvents();runServer('initializeSpreadsheet').then(()=>runServer('getAppState')).then((appState)=>{const safeAppState=(appState&&Array.isArray(appState.projects))?appState:{projects:[],spreadsheetUrl:''};state.appState=safeAppState;if(safeAppState.projects.length)state.currentProjectId=safeAppState.projects[0].projectId;renderApp();}).catch(err=>{showError(err);renderApp();});}
+    function fillOptions(){ $('modalProjectPhase').innerHTML=PHASES.map(v=>`<option value="${v}">${v}</option>`).join(''); $('modalMasterPhase').innerHTML=PHASES.map(v=>`<option value="${v}">${v}</option>`).join(''); $('modalMasterPriority').innerHTML=PRIORITIES.map(v=>`<option value="${v}">${v}</option>`).join('');}
+    function bindEvents(){
+      $('viewSwitch').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; state.currentView=b.dataset.view; renderVisibility(); if(state.currentView==='master'&&!state.masters.length){ loadMasters(); }});
+      $('projectSelect').addEventListener('change',e=>{state.currentProjectId=e.target.value; loadProjectDetail();});
+      $('phaseSummary').addEventListener('click',e=>{const b=e.target.closest('[data-phase]'); if(!b)return; state.currentPhase=b.dataset.phase; renderProjectDetail();});
+      $('phaseTabs').addEventListener('click',e=>{const b=e.target.closest('[data-phase]'); if(!b)return; state.currentPhase=b.dataset.phase; renderProjectDetail();});
+      $('checklistGroups').addEventListener('click',e=>{const b=e.target.closest('[data-action="save-task"]'); if(!b)return; saveTask(b.dataset.taskMasterId);});
+      $('masterFilter').addEventListener('click',e=>{const b=e.target.closest('[data-filter]'); if(!b)return; state.masterFilter=b.dataset.filter; renderMaster();});
+      $('createProjectButton').addEventListener('click',()=>openModal('projectModal'));
+      $('createMasterButton').addEventListener('click',()=>openMaster());
+      $('submitProjectButton').addEventListener('click',submitProject);
+      $('submitMasterButton').addEventListener('click',submitMaster);
+      $('masterTableBody').addEventListener('click',e=>{const b=e.target.closest('[data-master-action]'); if(!b)return; const row=state.masters.find(x=>x.taskMasterId===b.dataset.taskMasterId); if(!row)return; if(b.dataset.masterAction==='edit')openMaster(row); if(b.dataset.masterAction==='toggle')runServer('toggleMasterItem',{taskMasterId:row.taskMasterId,isActive:!row.isActive}).then(()=>reloadMasters()).then(()=>toast('マスタ状態を更新しました。')).catch(showError);});
+      document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));
+    }
+
+    function renderApp(){renderProjectOptions();renderVisibility();renderMaster(); if(state.currentProjectId){loadProjectDetail();} else {renderEmpty();} if(state.appState&&state.appState.spreadsheetUrl){$('spreadsheetLinkWrap').innerHTML=`<a class="link-btn" href="${state.appState.spreadsheetUrl}" target="_blank" rel="noopener noreferrer">スプレッドシートを開く</a>`;}}
+    function renderVisibility(){ $('projectScreen').classList.toggle('active',state.currentView==='project'); $('masterScreen').classList.toggle('active',state.currentView==='master'); $('projectField').classList.toggle('hidden',state.currentView==='master'); document.querySelectorAll('#viewSwitch [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.currentView));}
+    function normalizeProject(project){
+      if(!project) return null;
+      const projectId=project.projectId||project.id||'';
+      const projectName=project.projectName||project.name||projectId||'名称未設定案件';
+      return Object.assign({}, project, { projectId, projectName });
+    }
+    function renderProjectOptions(){
+      const rawProjects=(state.appState&&Array.isArray(state.appState.projects))?state.appState.projects:[];
+      const projects=rawProjects.map(normalizeProject).filter(Boolean);
+      if(state.currentProjectId && !projects.some(p=>p.projectId===state.currentProjectId)){
+        projects.push({ projectId: state.currentProjectId, projectName: '新規作成案件' });
+      }
+      $('projectSelect').innerHTML=projects.map(p=>`<option value="${p.projectId}">${escapeHtml(p.projectName)}</option>`).join('');
+      $('projectSelect').value=state.currentProjectId||'';
+      if(state.currentProjectId && $('projectSelect').value!==state.currentProjectId){
+        const fallback=document.createElement('option');
+        fallback.value=state.currentProjectId;
+        fallback.textContent='新規作成案件';
+        $('projectSelect').appendChild(fallback);
+        $('projectSelect').value=state.currentProjectId;
+      }
+    }
+    function loadProjectDetail(){ if(!state.currentProjectId){renderEmpty(); return Promise.resolve();} return runServer('getProjectChecklist',state.currentProjectId).then(detail=>{state.projectDetail=detail; renderProjectDetail();}).catch(showError);}
+    function renderEmpty(){ $('phaseSummary').innerHTML=''; $('phaseTabs').innerHTML=''; $('checklistGroups').innerHTML='<p class="helper">案件がありません。新規案件を作成してください。</p>';}
+    function renderProjectDetail(){ if(!state.projectDetail){renderEmpty(); return;} const d=state.projectDetail; const selected=d.phases.find(p=>p.phase===state.currentPhase)||d.phases[0]; state.currentPhase=selected.phase; $('projectId').textContent=d.project.projectId; $('projectName').textContent=d.project.projectName; $('projectOwner').textContent=d.project.owner; $('projectStage').textContent=d.project.currentPhase; $('projectWindow').textContent=`${d.project.startDate||'-'} - ${d.project.launchDate||'-'}`; $('projectOverallProgress').textContent=`${d.progress.overall}%`;
+      $('phaseSummary').innerHTML=d.phases.map(p=>`<button class="card ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button"><div class="card-top"><span>${p.phase}</span><strong>${p.progress}%</strong></div><div class="bar"><div class="fill" style="width:${p.progress}%"></div></div><p>${p.totalTasks}タスク</p></button>`).join('');
+      $('phaseTabs').innerHTML=d.phases.map(p=>`<button class="pill ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button">${p.phase}</button>`).join('');
+      $('phaseTitle').textContent=selected.phase; $('phaseDescription').textContent=phaseDescription(selected.phase); $('phaseMetaCount').textContent=`${selected.totalTasks}タスク`;
+      const latest=selected.categories.flatMap(c=>c.items).map(i=>i.updatedAt||'').sort().reverse()[0]||'-'; $('phaseMetaUpdated').textContent=`最終更新 ${latest}`;
+      $('checklistGroups').innerHTML=selected.categories.map(c=>`<section class="section"><div class="section-head"><div><h3>${c.category}</h3><p>${c.items.length}件のタスク</p></div></div><table class="table"><thead><tr><th>タスク</th><th>重要度</th><th>ステータス</th><th>備考</th><th>更新</th><th>保存</th></tr></thead><tbody>${c.items.map(item=>`<tr><td class="task">${escapeHtml(item.taskName)}</td><td><span class="badge">${item.priority}</span></td><td><select data-status="${item.taskMasterId}">${STATUS_OPTIONS.map(o=>`<option value="${o.value}" ${o.value===item.status?'selected':''}>${o.label}</option>`).join('')}</select></td><td><textarea data-note="${item.taskMasterId}">${escapeHtml(item.note||'')}</textarea></td><td>${escapeHtml(item.updatedBy||'-')}<br><span class="helper">${escapeHtml(item.updatedAt||'-')}</span></td><td><button class="btn small" data-action="save-task" data-task-master-id="${item.taskMasterId}" type="button">保存</button></td></tr>`).join('')}</tbody></table></section>`).join('');
+    }
+    function renderMaster(){ const masters=filteredMasters(); $('masterTaskCount').textContent=`${masters.length}件の標準タスク`; $('masterActiveCount').textContent=`有効 ${state.masters.filter(i=>i.isActive).length}件`; document.querySelectorAll('#masterFilter [data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===state.masterFilter)); $('masterTableBody').innerHTML=masters.map(i=>`<tr><td>${i.taskMasterId}</td><td>${i.phase}</td><td>${i.category}</td><td>${escapeHtml(i.taskName)}</td><td><span class="badge">${i.priority}</span></td><td><span class="state ${i.isActive?'active':'inactive'}">${i.isActive?'有効':'無効'}</span></td><td>${i.sortOrder}</td><td><div class="row-actions"><button class="btn small" data-master-action="edit" data-task-master-id="${i.taskMasterId}" type="button">編集</button><button class="btn small" data-master-action="toggle" data-task-master-id="${i.taskMasterId}" type="button">${i.isActive?'無効化':'有効化'}</button></div></td></tr>`).join(''); if(!state.masters.length){ $('masterTableBody').innerHTML='<tr><td colspan="8">マスタは未読込です。マスタ管理画面を開いた際に取得します。</td></tr>'; }}
+    function filteredMasters(){ if(state.masterFilter==='active')return state.masters.filter(i=>i.isActive); if(state.masterFilter==='inactive')return state.masters.filter(i=>!i.isActive); return state.masters;}
+    function saveTask(taskMasterId){ const updatedBy=$('updatedByInput').value.trim()||'担当者'; const status=document.querySelector(`[data-status="${taskMasterId}"]`).value; const note=document.querySelector(`[data-note="${taskMasterId}"]`).value; runServer('saveProjectTaskUpdates',{projectId:state.currentProjectId,updatedBy,updates:[{taskMasterId,status,note}]}).then(detail=>{state.projectDetail=detail; return refreshAppState().then(()=>{ renderProjectDetail(); toast('タスクを保存しました。');});}).catch(showError);}
+    function submitProject(){ const draftProjectName=$('modalProjectName').value.trim(); runServer('createProject',{projectName:draftProjectName,owner:$('modalProjectOwner').value,currentPhase:$('modalProjectPhase').value,startDate:$('modalProjectStart').value,launchDate:$('modalProjectLaunch').value,status:'進行中'}).then(detail=>{ if(!detail||!detail.project||!(detail.project.projectId||detail.project.id)){ throw new Error('案件作成結果が不正です。'); } const normalizedProject=normalizeProject(Object.assign({ projectName: draftProjectName }, detail.project)); const newProjectId=normalizedProject.projectId; closeModal('projectModal'); clearProjectModal(); if(!state.appState){ state.appState={projects:[],spreadsheetUrl:''}; } if(!Array.isArray(state.appState.projects)){ state.appState.projects=[]; } const index=state.appState.projects.findIndex(project=>normalizeProject(project).projectId===newProjectId); if(index>=0){ state.appState.projects[index]=normalizedProject; } else { state.appState.projects=[normalizedProject].concat(state.appState.projects.map(normalizeProject).filter(Boolean)); } state.currentProjectId=newProjectId; state.projectDetail=detail; renderProjectOptions(); $('projectSelect').value=newProjectId; renderVisibility(); renderProjectDetail(); toast('案件を作成しました。'); console.log('submitProject local project list', state.appState.projects.map(p=>normalizeProject(p)).filter(Boolean).map(p=>({projectId:p.projectId,projectName:p.projectName}))); return refreshAppState({preferredProjectId:newProjectId,debugLabel:'submitProject-background'}).then((appState)=>{ if(appState&&Array.isArray(appState.projects)){ console.log('submitProject refreshed projects',appState.projects.map(p=>({projectId:p.projectId,projectName:p.projectName}))); renderProjectOptions(); $('projectSelect').value=newProjectId; } return null; }); }).catch(showError);}
+    function openMaster(master){ $('masterModalTitle').textContent=master?'マスタタスク編集':'新規マスタタスク追加'; $('modalTaskMasterId').value=master?master.taskMasterId:''; $('modalMasterPhase').value=master?master.phase:PHASES[0]; $('modalMasterCategory').value=master?master.category:''; $('modalMasterTaskName').value=master?master.taskName:''; $('modalMasterPriority').value=master?master.priority:PRIORITIES[1]; $('modalMasterSortOrder').value=master?master.sortOrder:''; openModal('masterModal');}
+    function submitMaster(){ const existing=state.masters.find(i=>i.taskMasterId===$('modalTaskMasterId').value); runServer('saveMasterItem',{taskMasterId:$('modalTaskMasterId').value||undefined,phase:$('modalMasterPhase').value,category:$('modalMasterCategory').value,taskName:$('modalMasterTaskName').value,priority:$('modalMasterPriority').value,sortOrder:$('modalMasterSortOrder').value,isActive:existing?existing.isActive:true}).then(()=>reloadMasters()).then(()=>{closeModal('masterModal'); toast('マスタを保存しました。');}).catch(showError);}
+    function loadMasters(){ return runServer('getMasterItems','all').then(items=>{ state.masters=Array.isArray(items)?items:[]; renderMaster(); return state.masters; }).catch(showError); }
+    function reloadMasters(){ return loadMasters().then(()=>refreshAppState()).then(()=>state.currentProjectId?loadProjectDetail():null);}
+    function refreshAppState(options){ const opts=options||{}; return runServer('getAppState').then(appState=>{ if(!appState||!Array.isArray(appState.projects)){ console.error('getAppState returned unexpected payload', appState); return { projects: [], spreadsheetUrl: '' }; } state.appState=appState; const hasPreferred=opts.preferredProjectId&&appState.projects.some(project=>project.projectId===opts.preferredProjectId); if(hasPreferred){ state.currentProjectId=opts.preferredProjectId; } else if(!state.currentProjectId&&appState.projects.length){ state.currentProjectId=appState.projects[0].projectId; } else if(state.currentProjectId&&!appState.projects.some(project=>project.projectId===state.currentProjectId)){ state.currentProjectId=appState.projects.length?appState.projects[0].projectId:''; } renderProjectOptions(); if(opts.debugLabel){ console.log(opts.debugLabel, { preferredProjectId: opts.preferredProjectId || '', currentProjectId: state.currentProjectId, projectCount: appState.projects.length }); } return appState; });}
+    function setButtonBusy(button,label){ if(!button) return ()=>{}; const originalLabel=button.textContent; button.disabled=true; button.textContent=label||'処理中...'; return ()=>{ button.disabled=false; button.textContent=originalLabel; }; }
+    function saveTask(taskMasterId){ const button=document.querySelector(`[data-action="save-task"][data-task-master-id="${taskMasterId}"]`); const resetBusy=setButtonBusy(button,'保存中...'); const updatedBy=$('updatedByInput').value.trim()||'担当者'; const status=document.querySelector(`[data-status="${taskMasterId}"]`).value; const note=document.querySelector(`[data-note="${taskMasterId}"]`).value; runServer('saveProjectTaskUpdates',{projectId:state.currentProjectId,updatedBy,updates:[{taskMasterId,status,note}]}).then(detail=>{state.projectDetail=detail; renderProjectDetail(); toast('タスクを保存しました。');}).catch(showError).finally(resetBusy);}
+    function submitMaster(){ const button=$('submitMasterButton'); const resetBusy=setButtonBusy(button,'保存中...'); const existing=state.masters.find(i=>i.taskMasterId===$('modalTaskMasterId').value); runServer('saveMasterItem',{taskMasterId:$('modalTaskMasterId').value||undefined,phase:$('modalMasterPhase').value,category:$('modalMasterCategory').value,taskName:$('modalMasterTaskName').value,priority:$('modalMasterPriority').value,sortOrder:$('modalMasterSortOrder').value,isActive:existing?existing.isActive:true}).then((result)=>reloadMasters(result)).then((result)=>{closeModal('masterModal'); toast(`マスタを保存しました${result&&typeof result.insertedCount==='number'&&result.insertedCount>0?` (${result.insertedCount}件反映)`:''}。`);}).catch(showError).finally(resetBusy);}
+    function reloadMasters(result){ if(result&&Array.isArray(result.masters)){ state.masters=result.masters; renderMaster(); return Promise.resolve(result); } return loadMasters().then(()=>({insertedCount:0}));}
+    function openModal(id){ $(id).classList.add('show'); } function closeModal(id){ $(id).classList.remove('show'); }
+    function clearProjectModal(){ $('modalProjectName').value=''; $('modalProjectOwner').value='Web担当'; $('modalProjectPhase').value=PHASES[0]; $('modalProjectStart').value=''; $('modalProjectLaunch').value='';}
+    function toast(message){ const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'),2800);}
+    function showError(error){ console.error(error); toast(error&&error.message?error.message:String(error));}
+    function phaseDescription(phase){ return {'制作前':'現状分析とヒアリングを整理し、要件を固めるフェーズです。','制作':'実制作物の品質、導線、表現を確認するフェーズです。','公開前':'公開前の最終確認と技術・SEO観点の点検フェーズです。','公開後':'公開後の計測環境と運用準備を確認するフェーズです。'}[phase]||'';}
+    function escapeHtml(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function runServer(fn,payload){ return new Promise((resolve,reject)=>{ google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](payload); }); }
+    function summarizePhaseStatuses(items){ const rows=Array.isArray(items)?items:[]; const doneCount=rows.filter(item=>item.status==='ok'||item.status==='na').length; const pendingCount=rows.filter(item=>item.status==='pending').length; const ngCount=rows.filter(item=>item.status==='ng').length; const totalCount=rows.length; const progressPercent=totalCount?Math.round((doneCount/totalCount)*100):0; return {doneCount,pendingCount,ngCount,totalCount,progressPercent}; }
+    function ensurePhaseMetaSummary(){ let summary=$('phaseMetaSummary'); if(summary)return summary; summary=document.createElement('span'); summary.id='phaseMetaSummary'; const updated=$('phaseMetaUpdated'); if(updated&&updated.parentNode){ updated.parentNode.insertBefore(summary, updated); } return summary; }
+    function renderProjectDetail(){ if(!state.projectDetail){renderEmpty(); return;} const d=state.projectDetail; const selected=d.phases.find(p=>p.phase===state.currentPhase)||d.phases[0]; state.currentPhase=selected.phase; $('projectId').textContent=d.project.projectId; $('projectName').textContent=d.project.projectName; $('projectOwner').textContent=d.project.owner; $('projectStage').textContent=d.project.currentPhase; $('projectWindow').textContent=`${d.project.startDate||'-'} - ${d.project.launchDate||'-'}`; $('projectOverallProgress').textContent=`${d.progress.overall}%`; $('phaseSummary').innerHTML=d.phases.map(p=>{ const items=p.categories.flatMap(c=>c.items); const summary=summarizePhaseStatuses(items); return `<button class="card ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button"><div class="card-top"><span>${p.phase}</span><strong>進捗 ${summary.progressPercent}%</strong></div><div class="bar"><div class="fill" style="width:${summary.progressPercent}%"></div></div><p>完了 ${summary.doneCount} / 全体 ${summary.totalCount}</p><div class="card-statuses"><span>完了 ${summary.doneCount}件</span><span>未確認 ${summary.pendingCount}件</span><span>要確認 ${summary.ngCount}件</span></div></button>`; }).join(''); $('phaseTabs').innerHTML=d.phases.map(p=>`<button class="pill ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button">${p.phase}</button>`).join(''); const selectedItems=selected.categories.flatMap(c=>c.items); const selectedSummary=summarizePhaseStatuses(selectedItems); $('phaseTitle').textContent=selected.phase; $('phaseDescription').textContent=phaseDescription(selected.phase); $('phaseMetaCount').textContent=`${selectedSummary.totalCount}タスク / 完了 ${selectedSummary.doneCount}件`; ensurePhaseMetaSummary().textContent=`未確認 ${selectedSummary.pendingCount}件 / 要確認 ${selectedSummary.ngCount}件`; const latest=selectedItems.map(i=>i.updatedAt||'').sort().reverse()[0]||'-'; $('phaseMetaUpdated').textContent=`最終更新 ${latest}`; $('checklistGroups').innerHTML=selected.categories.map(c=>`<section class="section"><div class="section-head"><div><h3>${c.category}</h3><p>${c.items.length}件のタスク</p></div></div><table class="table"><thead><tr><th>タスク</th><th>重要度</th><th>ステータス</th><th>備考</th><th>更新</th><th>保存</th></tr></thead><tbody>${c.items.map(item=>`<tr><td class="task">${escapeHtml(item.taskName)}</td><td><span class="badge">${item.priority}</span></td><td><select data-status="${item.taskMasterId}">${STATUS_OPTIONS.map(o=>`<option value="${o.value}" ${o.value===item.status?'selected':''}>${o.label}</option>`).join('')}</select></td><td><textarea data-note="${item.taskMasterId}">${escapeHtml(item.note||'')}</textarea></td><td>${escapeHtml(item.updatedBy||'-')}<br><span class="helper">${escapeHtml(item.updatedAt||'-')}</span></td><td><button class="btn small" data-action="save-task" data-task-master-id="${item.taskMasterId}" type="button">保存</button></td></tr>`).join('')}</tbody></table></section>`).join(''); }
+    init();
+    state.editingTaskIds = state.editingTaskIds || {};
+    function summarizePhaseStatuses(items){ const rows=Array.isArray(items)?items:[]; const doneCount=rows.filter(item=>item.status==='ok'||item.status==='na').length; const pendingCount=rows.filter(item=>item.status==='pending').length; const ngCount=rows.filter(item=>item.status==='ng').length; const totalCount=rows.length; const progressPercent=totalCount?Math.round((doneCount/totalCount)*100):0; return {doneCount,pendingCount,ngCount,totalCount,progressPercent}; }
+    function ensurePhaseMetaSummary(){ let summary=$('phaseMetaSummary'); if(summary)return summary; summary=document.createElement('span'); summary.id='phaseMetaSummary'; const updated=$('phaseMetaUpdated'); if(updated&&updated.parentNode){ updated.parentNode.insertBefore(summary, updated); } return summary; }
+    function statusBadgeLabel(status){ return {ok:'OK',ng:'要確認',pending:'未確認',na:'N/A'}[status]||'未確認'; }
+    function statusBadgeClass(status){ return {ok:'ok',ng:'ng',pending:'pending',na:'na'}[status]||'pending'; }
+    function isTaskEditing(taskMasterId){ return state.editingTaskIds && state.editingTaskIds[taskMasterId]===true; }
+    function setTaskEditing(taskMasterId,isEditing){ state.editingTaskIds = state.editingTaskIds || {}; if(isEditing){ state.editingTaskIds[taskMasterId]=true; } else { delete state.editingTaskIds[taskMasterId]; } }
+    $('checklistGroups').addEventListener('click',e=>{ const action=e.target.closest('[data-row-action]'); if(!action)return; const taskMasterId=action.dataset.taskMasterId; if(!taskMasterId)return; if(action.dataset.rowAction==='edit'){ setTaskEditing(taskMasterId,true); renderProjectDetail(); } if(action.dataset.rowAction==='cancel'){ setTaskEditing(taskMasterId,false); renderProjectDetail(); } });
+    function renderProjectDetail(){ if(!state.projectDetail){renderEmpty(); return;} const d=state.projectDetail; const selected=d.phases.find(p=>p.phase===state.currentPhase)||d.phases[0]; state.currentPhase=selected.phase; $('projectId').textContent=d.project.projectId; $('projectName').textContent=d.project.projectName; $('projectOwner').textContent=d.project.owner; $('projectStage').textContent=d.project.currentPhase; $('projectWindow').textContent=`${d.project.startDate||'-'} - ${d.project.launchDate||'-'}`; $('projectOverallProgress').textContent=`${d.progress.overall}%`; $('phaseSummary').innerHTML=d.phases.map(p=>{ const items=p.categories.flatMap(c=>c.items); const summary=summarizePhaseStatuses(items); return `<button class="card ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button"><div class="card-top"><span>${p.phase}</span><strong>進捗 ${summary.progressPercent}%</strong></div><div class="bar"><div class="fill" style="width:${summary.progressPercent}%"></div></div><p>完了 ${summary.doneCount} / 全体 ${summary.totalCount}</p><div class="card-statuses"><span>完了 ${summary.doneCount}件</span><span>未確認 ${summary.pendingCount}件</span><span>要確認 ${summary.ngCount}件</span></div></button>`; }).join(''); $('phaseTabs').innerHTML=d.phases.map(p=>`<button class="pill ${p.phase===state.currentPhase?'active':''}" data-phase="${p.phase}" type="button">${p.phase}</button>`).join(''); const selectedItems=selected.categories.flatMap(c=>c.items); const selectedSummary=summarizePhaseStatuses(selectedItems); $('phaseTitle').textContent=selected.phase; $('phaseDescription').textContent=phaseDescription(selected.phase); $('phaseMetaCount').textContent=`${selectedSummary.totalCount}タスク / 完了 ${selectedSummary.doneCount}件`; ensurePhaseMetaSummary().textContent=`未確認 ${selectedSummary.pendingCount}件 / 要確認 ${selectedSummary.ngCount}件`; const latest=selectedItems.map(i=>i.updatedAt||'').sort().reverse()[0]||'-'; $('phaseMetaUpdated').textContent=`最終更新 ${latest}`; $('checklistGroups').innerHTML=selected.categories.map(c=>{ const categorySummary=summarizePhaseStatuses(c.items); return `<section class="section"><div class="section-head"><div><h3>${c.category}</h3><p>${c.items.length}件のタスク</p></div><div class="section-meta"><span>完了 ${categorySummary.doneCount}件</span><span>未確認 ${categorySummary.pendingCount}件</span><span>要確認 ${categorySummary.ngCount}件</span></div></div><table class="table"><thead><tr><th>タスク</th><th>重要度</th><th>ステータス</th><th>備考</th><th>更新</th><th>操作</th></tr></thead><tbody>${c.items.map(item=>{ const editing=isTaskEditing(item.taskMasterId); return `<tr><td class="task">${escapeHtml(item.taskName)}</td><td><span class="badge">${item.priority}</span></td><td>${editing?`<select data-status="${item.taskMasterId}">${STATUS_OPTIONS.map(o=>`<option value="${o.value}" ${o.value===item.status?'selected':''}>${o.label}</option>`).join('')}</select>`:`<span class="state ${statusBadgeClass(item.status)}">${statusBadgeLabel(item.status)}</span>`}</td><td>${editing?`<textarea data-note="${item.taskMasterId}">${escapeHtml(item.note||'')}</textarea>`:`<div class="note-view">${escapeHtml(item.note||'-')}</div>`}</td><td>${escapeHtml(item.updatedBy||'-')}<br><span class="helper">${escapeHtml(item.updatedAt||'-')}</span></td><td><div class="row-actions inline">${editing?`<button class="btn small" data-action="save-task" data-task-master-id="${item.taskMasterId}" type="button">保存</button><button class="btn small" data-row-action="cancel" data-task-master-id="${item.taskMasterId}" type="button">取消</button>`:`<button class="btn small" data-row-action="edit" data-task-master-id="${item.taskMasterId}" type="button">編集</button>`}</div></td></tr>`; }).join('')}</tbody></table></section>`; }).join(''); }
+    function saveTask(taskMasterId){ const button=document.querySelector(`[data-action="save-task"][data-task-master-id="${taskMasterId}"]`); const resetBusy=setButtonBusy(button,'保存中...'); const updatedBy=$('updatedByInput').value.trim()||'Web担当'; const status=document.querySelector(`[data-status="${taskMasterId}"]`).value; const note=document.querySelector(`[data-note="${taskMasterId}"]`).value; runServer('saveProjectTaskUpdates',{projectId:state.currentProjectId,updatedBy,updates:[{taskMasterId,status,note}]}).then(detail=>{ setTaskEditing(taskMasterId,false); state.projectDetail=detail; renderProjectDetail(); toast('タスクを保存しました。'); }).catch(showError).finally(resetBusy);}
+    if(state.projectDetail){ renderProjectDetail(); }
+  </script>
+</body>
+</html>
